@@ -3,6 +3,7 @@ import torch.nn as nn
 from anode.models import ODEBlock
 from torchdiffeq import odeint, odeint_adjoint
 
+gpu_boole = torch.cuda.is_available()
 
 class Conv2dTime(nn.Conv2d):
     """

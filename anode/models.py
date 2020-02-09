@@ -6,6 +6,8 @@ from torchdiffeq import odeint, odeint_adjoint
 
 MAX_NUM_STEPS = 1000  # Maximum number of steps for ODE solver
 
+gpu_boole = torch.cuda.is_available()
+
 
 class ODEFunc(nn.Module):
     """MLP modeling the derivative of ODE system.
@@ -135,11 +137,16 @@ class ODEBlock(nn.Module):
                 batch_size, channels, height, width = x.shape
                 aug = torch.zeros(batch_size, self.odefunc.augment_dim,
                                   height, width)#.to(self.device)
+                if gpu_boole:
+                    aug=aug.cuda()
                 # Shape (batch_size, channels + augment_dim, height, width)
                 x_aug = torch.cat([x, aug], 1)
             else:
                 # Add augmentation
                 aug = torch.zeros(x.shape[0], self.odefunc.augment_dim)#.to(self.device)
+                if gpu_boole:
+                    aug=aug.cuda()
+
                 # Shape (batch_size, data_dim + augment_dim)
                 x_aug = torch.cat([x, aug], 1)
         else:
