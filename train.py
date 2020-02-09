@@ -19,6 +19,11 @@ import os
 
 import time
 
+from anode.conv_models import ConvODENet
+from anode.models import ODENet
+from anode.training import Trainer
+
+
 gpu_boole = torch.cuda.is_available()
 
 import argparse
@@ -63,7 +68,8 @@ permutations = [torch.Tensor(np.random.permutation(784).astype(np.float64)).long
 torch.save(torch.stack(permutations),args.save_path[:len(args.save_path)-2]+'permutations.pt')
 
 ## model and optimizer instantiations:
-net = ClassifierMLP(image_size = args.im_size, output_shape=10, tasks=args.tasks, layer_size=args.hidden_size, bn_boole=True)
+# net = ClassifierMLP(image_size = args.im_size, output_shape=10, tasks=args.tasks, layer_size=args.hidden_size, bn_boole=True)
+net = ConvODENet(img_size=(1, 28, 28), num_filters=32, augment_dim=1, output_dim=10)
 if gpu_boole:
     net = net.cuda()
 
@@ -106,27 +112,25 @@ def dataset_eval(data_loader, verbose = 1, task = 0, round_=False):
 
 ## Task Loop:
 for j in range(args.tasks):
-                
-    
+                    
     for epoch in range(args.epochs):
                 
         t1 = time.time()
         
         print("Task:",j,"- Epoch:",epoch)
 
-        for i, (x,y) in enumerate(train_loader):
+        for i, (x,y) in enumerate(train_loader):                        
             
             if gpu_boole:
-                x, y = x.cuda(), y.cuda()
-                
+                x, y = x.cuda(), y.cuda()                
                 
             # x = x.view(-1,28*28)[:,permutations[j]]
-            x = x.view(-1,28*28)                
+            x = x.view(-1,1,28,28)                
             y = y.view(-1)
             
             optimizer.zero_grad()
             outputs = net(x,task=j)
-            
+                        
             loss = loss_metric(outputs,y)
             
             loss.backward()
