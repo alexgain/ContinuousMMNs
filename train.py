@@ -120,6 +120,7 @@ for j in range(args.tasks):
         print("Task:",j,"- Epoch:",epoch)
 
         for i, (x,y) in enumerate(train_loader):                        
+            print(i)
             
             if gpu_boole:
                 x, y = x.cuda(), y.cuda()                
