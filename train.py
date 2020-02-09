@@ -83,24 +83,24 @@ def dataset_eval(data_loader, verbose = 1, task = 0, round_=False):
     total = 0
     loss_sum = 0
     for images, labels in data_loader:
-        if gpu_boole:
-            images, labels = images.cuda(), labels.cuda()
-        
-        # images = images.view(-1,28*28)[:,permutations[task]]
-        images = images.view(-1,28*28)
-        labels = labels.view(-1).cpu()
         try:
-            outputs = net(images, task = task, round_=round_).cpu()
+            if gpu_boole:
+                images, labels = images.cuda(), labels.cuda()
+            
+            # images = images.view(-1,28*28)[:,permutations[task]]
+            images = images.view(-1,28*28)
+            labels = labels.view(-1).cpu()
+            outputs = net(images, task = task, round_=round_).cpu()            
+            _, predicted = torch.max(outputs.cpu().data, 1)
+            total += labels.size(0)
+            correct += (predicted.float() == labels.float()).sum().cpu().data.numpy().item()
+    
+            loss_sum += loss_metric(outputs,labels).cpu().data.numpy().item()
+            
+            del images; del labels; del outputs; del _; del predicted;
         except Exception as e:
             print(e)
-            
-        _, predicted = torch.max(outputs.cpu().data, 1)
-        total += labels.size(0)
-        correct += (predicted.float() == labels.float()).sum().cpu().data.numpy().item()
 
-        loss_sum += loss_metric(outputs,labels).cpu().data.numpy().item()
-        
-        del images; del labels; del outputs; del _; del predicted;
     
     correct = np.float(correct)
     total = np.float(total)
