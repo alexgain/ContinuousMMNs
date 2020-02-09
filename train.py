@@ -30,7 +30,7 @@ parser.add_argument('--lr', type=float, default=1e-4, help='learning rate')
 parser.add_argument('--tasks', default=10, type=int, help='no. of tasks')
 parser.add_argument('--hidden_size', default=64, type=int, help='hidden neurons')
 parser.add_argument('--im_size', default=28, type=int, help='image dimensions')
-parser.add_argument('--save_path', default='default.pt', type=str, help='save path')
+parser.add_argument('--save_path', default='./saved_models/default.pt', type=str, help='save path')
 args = parser.parse_args()
 
 
