@@ -89,7 +89,11 @@ def dataset_eval(data_loader, verbose = 1, task = 0, round_=False):
         # images = images.view(-1,28*28)[:,permutations[task]]
         images = images.view(-1,28*28)
         labels = labels.view(-1).cpu()
-        outputs = net(images, task = task, round_=round_).cpu()
+        try:
+            outputs = net(images, task = task, round_=round_).cpu()
+        except Exception as e:
+            print(e)
+            
         _, predicted = torch.max(outputs.cpu().data, 1)
         total += labels.size(0)
         correct += (predicted.float() == labels.float()).sum().cpu().data.numpy().item()
@@ -119,8 +123,7 @@ for j in range(args.tasks):
         
         print("Task:",j,"- Epoch:",epoch)
 
-        for i, (x,y) in enumerate(train_loader):                        
-            print(i)
+        for i, (x,y) in enumerate(train_loader):
             
             if gpu_boole:
                 x, y = x.cuda(), y.cuda()                
