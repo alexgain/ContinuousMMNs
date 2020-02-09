@@ -151,7 +151,7 @@ class ConvODENet(nn.Module):
 
         self.linear_layer = nn.Linear(self.flattened_dim, self.output_dim)
 
-    def forward(self, x, return_features=False, task = 0):
+    def forward(self, x, return_features=False, task = 0, round_ = False):
         features = self.odeblock(x)
         pred = self.linear_layer(features.view(features.size(0), -1))
         if return_features:
