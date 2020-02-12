@@ -19,8 +19,8 @@ import os
 
 import time
 
-from anode.conv_models import ConvODENet
-from anode.models import ODENet
+from anode.conv_models import ConvODENet, AConvODENet
+from anode.models import ODENet, AODENet
 from anode.training import Trainer
 
 
