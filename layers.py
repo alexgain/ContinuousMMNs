@@ -6,7 +6,7 @@ import torch.nn.functional as F
 
 class AConv2d(nn.Conv2d):
 
-    def __init__(self, in_channels, out_channels, kernel_size, stride=1, padding=0, dilation=1, bias=False, datasets=1, same_init=False, Beta=False):
+    def __init__(self, in_channels, out_channels, kernel_size, stride=1, padding=0, dilation=1, bias=False, datasets=8, same_init=False, Beta=False):
         super().__init__(in_channels, out_channels, kernel_size, stride=stride, padding=padding, dilation=dilation, bias=bias)
         
         self.multi=False
@@ -24,15 +24,15 @@ class AConv2d(nn.Conv2d):
     def soft_round(self, x, beta = 100):
         return (1 / (1 + torch.exp(-(beta * (x - 0.5)))))
         
-    def forward(self, input, dataset, round_=False):
+    def forward(self, input, task = 0, round_=False):
         if round_:
             if self.Beta:
-                return F.conv2d(input, (self.soft_round(self.adjx[dataset], self.beta).round().float())*self.weight, bias=self.bias, stride=self.stride, padding=self.padding, dilation=self.dilation)
-            return F.conv2d(input, (self.soft_round(self.adjx[dataset]).round().float())*self.weight, bias=self.bias, stride=self.stride, padding=self.padding, dilation=self.dilation)
+                return F.conv2d(input, (self.soft_round(self.adjx[task], self.beta).round().float())*self.weight, bias=self.bias, stride=self.stride, padding=self.padding, dilation=self.dilation)
+            return F.conv2d(input, (self.soft_round(self.adjx[task]).round().float())*self.weight, bias=self.bias, stride=self.stride, padding=self.padding, dilation=self.dilation)
             
         if self.Beta:
-            return F.conv2d(input, self.soft_round(self.adjx[dataset], self.beta)*self.weight, bias=self.bias, stride=self.stride, padding=self.padding, dilation=self.dilation)
-        return F.conv2d(input, self.soft_round(self.adjx[dataset])*self.weight, bias=self.bias, stride=self.stride, padding=self.padding, dilation=self.dilation)
+            return F.conv2d(input, self.soft_round(self.adjx[task], self.beta)*self.weight, bias=self.bias, stride=self.stride, padding=self.padding, dilation=self.dilation)
+        return F.conv2d(input, self.soft_round(self.adjx[task])*self.weight, bias=self.bias, stride=self.stride, padding=self.padding, dilation=self.dilation)
 
     def get_nconnections(self, dataset):
         try:
@@ -49,7 +49,7 @@ class AConv2d(nn.Conv2d):
 
 class ALinear(nn.Linear):
 
-    def __init__(self, in_features, out_features, bias=False, datasets=1, same_init=False, Beta=False, multi=False):
+    def __init__(self, in_features, out_features, bias=False, datasets=8, same_init=False, Beta=False, multi=False):
         super().__init__(in_features, out_features, bias)
         
         self.adjx = nn.ParameterList([nn.Parameter(torch.Tensor(self.weight.shape).uniform_(0, 1),requires_grad=True) for i in range(datasets)])
@@ -72,20 +72,20 @@ class ALinear(nn.Linear):
     def soft_round(self, x, beta = 100):
         return (1 / (1 + torch.exp(-(beta * (x - 0.5)))))
         
-    def forward(self, input, dataset, round_ = False):
+    def forward(self, input, task=0, round_ = False):
         if self.multi:
-            weight = self.weightx[dataset]
+            weight = self.weightx[task]
         else:
             weight = self.weight
             
         if round_:
             try:
-                return F.linear(input, (self.soft_round(self.adjx[dataset]).round().float())*weight, self.bias)
+                return F.linear(input, (self.soft_round(self.adjx[task]).round().float())*weight, self.bias)
             except Exception as e:
                 print("DatasetError: {}".format(e))            
 
         try:
-            return F.linear(input, self.soft_round(self.adjx[dataset])*weight, self.bias)
+            return F.linear(input, self.soft_round(self.adjx[task])*weight, self.bias)
         except Exception as e:
             print("DatasetError: {}".format(e))
 
