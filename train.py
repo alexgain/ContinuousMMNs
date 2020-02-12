@@ -139,10 +139,8 @@ for j in range(args.tasks):
             y = y.view(-1)
             
             optimizer.zero_grad()
-            try:
-                outputs = net(x,task=j)
-            except Exception as e: 
-                print(e)                
+            
+            outputs = net(x,task=j)
                         
             loss = loss_metric(outputs,y)
             
