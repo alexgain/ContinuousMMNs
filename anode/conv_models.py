@@ -251,7 +251,6 @@ class AConvODEFunc(nn.Module):
             out = self.non_linearity(out)
             out = self.conv3(t, out, task = self.task, round_ = self.round_)
         else:
-            print(self.conv1)
             out = self.conv1(x, task = self.task, round_ = self.round_)
             out = self.non_linearity(out)
             out = self.conv2(out, task = self.task, round_ = self.round_)

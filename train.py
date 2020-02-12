@@ -130,24 +130,28 @@ for j in range(args.tasks):
         print("Task:",j,"- Epoch:",epoch)
 
         for i, (x,y) in enumerate(train_loader):
+            try:
             
-            if gpu_boole:
-                x, y = x.cuda(), y.cuda()                
+                if gpu_boole:
+                    x, y = x.cuda(), y.cuda()                
+                    
+                # x = x.view(-1,28*28)[:,permutations[j]]
+                x = x.view(-1,1,28,28)                
+                y = y.view(-1)
                 
-            # x = x.view(-1,28*28)[:,permutations[j]]
-            x = x.view(-1,1,28,28)                
-            y = y.view(-1)
-            
-            optimizer.zero_grad()
-            
-            outputs = net(x,task=j)
-                        
-            loss = loss_metric(outputs,y)
-            
-            loss.backward()
-            optimizer.step()
-            
-            del loss; del x; del y; del outputs;
+                optimizer.zero_grad()
+                
+                outputs = net(x,task=j)
+                            
+                loss = loss_metric(outputs,y)
+                
+                loss.backward()
+                optimizer.step()
+                
+                del loss; del x; del y; del outputs;
+            except Exception as e:
+                print(e)
+
         
         train_acc, train_loss = dataset_eval(train_loader, verbose = 0, task = j)
         test_acc, test_loss= dataset_eval(test_loader, verbose = 0, task = j)
