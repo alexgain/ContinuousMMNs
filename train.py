@@ -36,6 +36,7 @@ parser.add_argument('--tasks', default=10, type=int, help='no. of tasks')
 parser.add_argument('--hidden_size', default=64, type=int, help='hidden neurons')
 parser.add_argument('--im_size', default=28, type=int, help='image dimensions')
 parser.add_argument('--save_path', default='./saved_models/default.pt', type=str, help='save path')
+parser.add_argument('--load_path', default='', type=str, help='load path')
 args = parser.parse_args()
 
 
@@ -69,9 +70,13 @@ torch.save(torch.stack(permutations),args.save_path[:len(args.save_path)-2]+'per
 
 ## model and optimizer instantiations:
 # net = ClassifierMLP(image_size = args.im_size, output_shape=10, tasks=args.tasks, layer_size=args.hidden_size, bn_boole=True)
-net = ConvODENet(img_size=(1, 28, 28), num_filters=32, augment_dim=1, output_dim=10)
+if args.load_path != '':
+    net = torch.load(args.load_path)
+else:
+    net = ConvODENet(img_size=(1, 28, 28), num_filters=32, augment_dim=1, output_dim=10)
 if gpu_boole:
     net = net.cuda()
+
 
 optimizer = torch.optim.Adam(net.parameters(), lr = args.lr)
 
