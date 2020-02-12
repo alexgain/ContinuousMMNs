@@ -74,6 +74,7 @@ if args.load_path != '':
     net = torch.load(args.load_path)
 else:
     net = ConvODENet(img_size=(1, 28, 28), num_filters=32, augment_dim=1, output_dim=10)
+    # net = AConvODENet(img_size=(1, 28, 28), num_filters=32, augment_dim=1, output_dim=10)
 if gpu_boole:
     net = net.cuda()
 
