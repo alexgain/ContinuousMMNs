@@ -5,7 +5,7 @@ from torchdiffeq import odeint, odeint_adjoint
 
 import sys
 sys.path.append("..")
-from layers import AConv2D, ALinear
+from layers import AConv2d, ALinear
 
 
 
