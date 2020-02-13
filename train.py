@@ -93,7 +93,7 @@ def dataset_eval(data_loader, verbose = 1, task = 0, round_=False):
             if gpu_boole:
                 images, labels = images.cuda(), labels.cuda()
             
-            # images = images.view(-1,28*28)[:,permutations[task]]
+            images = images.view(-1,28*28)[:,permutations[task]]
             images = images.view(-1,1,28,28)
             labels = labels.view(-1).cpu()
             outputs = net(images, task = task, round_=round_).cpu()            
@@ -135,7 +135,7 @@ for j in range(args.tasks):
                 if gpu_boole:
                     x, y = x.cuda(), y.cuda()                
                     
-                # x = x.view(-1,28*28)[:,permutations[j]]
+                x = x.view(-1,28*28)[:,permutations[j]]
                 x = x.view(-1,1,28,28)                
                 y = y.view(-1)
                 
