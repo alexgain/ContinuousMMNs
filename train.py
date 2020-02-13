@@ -73,8 +73,8 @@ torch.save(torch.stack(permutations),args.save_path[:len(args.save_path)-2]+'per
 if args.load_path != '':
     net = torch.load(args.load_path)
 else:
-    net = ConvODENet(img_size=(1, 28, 28), num_filters=32, augment_dim=1, output_dim=10)
-    # net = AConvODENet(img_size=(1, 28, 28), num_filters=32, augment_dim=1, output_dim=10)
+    # net = ConvODENet(img_size=(1, 28, 28), num_filters=32, augment_dim=1, output_dim=10)
+    net = AConvODENet(img_size=(1, 28, 28), num_filters=32, augment_dim=1, output_dim=10)
 if gpu_boole:
     net = net.cuda()
 
@@ -163,7 +163,7 @@ for j in range(args.tasks):
         print('Time left for task:',((t2-t1)/60)*(args.epochs-epoch),'minutes')
         print()
                     
-    # _turn_off_adj(net,j)
+    _turn_off_adj(net,j)
     # _turn_off_weights(net)        
 
 
