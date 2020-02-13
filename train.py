@@ -164,7 +164,7 @@ for j in range(args.tasks):
         print()
                     
     _turn_off_adj(net,j)
-    _turn_off_weights(net)        
+    # _turn_off_weights(net)        
 
 
     loss_store = np.array(loss_store)
