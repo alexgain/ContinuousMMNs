@@ -119,9 +119,10 @@ def dataset_eval(data_loader, verbose = 1, task = 0, round_=False):
     del total; del correct; del loss_sum
     return acc, loss
     
-
 ## Task Loop:
 for j in range(args.tasks):
+    
+    loss_store = []
                     
     for epoch in range(args.epochs):
                 
@@ -152,6 +153,8 @@ for j in range(args.tasks):
             except Exception as e:
                 print(e)
 
+        _turn_off_adj(net,j)
+        _turn_off_multi_weights(net,j)        
         
         train_acc, train_loss = dataset_eval(train_loader, verbose = 0, task = j)
         test_acc, test_loss= dataset_eval(test_loader, verbose = 0, task = j)
@@ -163,6 +166,8 @@ for j in range(args.tasks):
         print('Time left for task:',((t2-t1)/60)*(args.epochs-epoch),'minutes')
         print()
                     
+    loss_store = np.array(loss_store)
+    np.save(args.save_path[:len(args.save_path)-2]+'loss_task'+str(j)+'.npy', loss_store)
     
     print("--------------------------------")
     print("Test acc for all tasks:")
