@@ -67,8 +67,11 @@ testing =  torchvision.datasets.MNIST(root ='./data', transform = test_data_aug,
 train_loader = torch.utils.data.DataLoader(dataset=training, batch_size = args.batch_size, shuffle=True)
 test_loader = torch.utils.data.DataLoader(dataset=testing, batch_size = args.batch_size, shuffle=False)
 
-permutations = [torch.Tensor(np.random.permutation(784).astype(np.float64)).long() for _ in range(args.tasks)]
-torch.save(torch.stack(permutations),args.save_path[:len(args.save_path)-2]+'permutations.pt')
+if args.load_path!="":
+    permutations = torch.load(args.load_path[:-2]+'permutations.pt')
+else:
+    permutations = [torch.Tensor(np.random.permutation(784).astype(np.float64)).long() for _ in range(args.tasks)]
+    torch.save(torch.stack(permutations),args.save_path[:len(args.save_path)-2]+'permutations.pt')
 
 ## model and optimizer instantiations:
 # net = ClassifierMLP(image_size = args.im_size, output_shape=10, tasks=args.tasks, layer_size=args.hidden_size, bn_boole=True)
