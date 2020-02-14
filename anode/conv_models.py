@@ -223,6 +223,13 @@ class AConvODEFunc(nn.Module):
             self.conv3 = AConv2d(self.num_filters, self.channels,
                                    kernel_size=1, stride=1, padding=0)
 
+        tasks = 8
+        self.bn1 = nn.ModuleList([nn.BatchNorm2d(self.num_filters) for j in range(tasks)])
+        self.bn2 = nn.ModuleList([nn.BatchNorm2d(self.num_filters) for j in range(tasks)])
+        self.bn3 = nn.ModuleList([nn.BatchNorm2d(self.channels) for j in range(tasks)])
+        # self.bn4 = nn.ModuleList([nn.BatchNorm2d(layer_size) for j in range(tasks)])
+
+
         if non_linearity == 'relu':
             self.non_linearity = nn.ReLU(inplace=True)
         elif non_linearity == 'softplus':
@@ -245,17 +252,17 @@ class AConvODEFunc(nn.Module):
         """
         self.nfe += 1
         if self.time_dependent:
-            out = self.conv1(t, x, task = self.task, round_ = self.round_)
+            out = self.bn1[self.task](self.conv1(t, x, task = self.task, round_ = self.round_))
             out = self.non_linearity(out)
-            out = self.conv2(t, out, task = self.task, round_ = self.round_)
+            out = self.bn2[self.task](self.conv2(t, out, task = self.task, round_ = self.round_))
             out = self.non_linearity(out)
-            out = self.conv3(t, out, task = self.task, round_ = self.round_)
+            out = self.bn3[self.task](self.conv3(t, out, task = self.task, round_ = self.round_))
         else:
-            out = self.conv1(x, task = self.task, round_ = self.round_)
+            out = self.bn1[self.task](self.conv1(x, task = self.task, round_ = self.round_))
             out = self.non_linearity(out)
-            out = self.conv2(out, task = self.task, round_ = self.round_)
+            out = self.bn2[self.task](self.conv2(out, task = self.task, round_ = self.round_))
             out = self.non_linearity(out)
-            out = self.conv3(out, task = self.task, round_ = self.round_)
+            out = self.bn3[self.task](self.conv3(out, task = self.task, round_ = self.round_))
         return out
     
     def update_task(self, task=0, round_= False):
