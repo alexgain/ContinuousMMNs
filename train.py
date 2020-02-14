@@ -32,6 +32,7 @@ parser = argparse.ArgumentParser(description='Sequence Modeling - (Permuted) Seq
 parser.add_argument('--batch_size', type=int, default=64, help='batch size')
 parser.add_argument('--epochs', type=int, default=10, help='number of epochs')
 parser.add_argument('--lr', type=float, default=1e-4, help='learning rate')
+parser.add_argument('--lr2', type=float, default=-1, help='learning rate')
 parser.add_argument('--tasks', default=10, type=int, help='no. of tasks')
 parser.add_argument('--hidden_size', default=32, type=int, help='hidden neurons')
 parser.add_argument('--im_size', default=28, type=int, help='image dimensions')
@@ -163,6 +164,19 @@ for j in range(args.tasks):
         print('Time left for task:',((t2-t1)/60)*(args.epochs-epoch),'minutes')
         print()
                     
+
+    if j==0:
+        if args.lr2 == -1:
+            args.lr2 = args.lr
+             
+        optimizer = torch.optim.Adam([
+                {'params': (param for name, param in net.named_parameters() if 'adjx' not in name), 'lr':args.lr},
+                {'params': (param for name, param in net.named_parameters() if 'adjx' in name), 'lr':args.lr2}
+            ])
+        
+        if args.epochs2 > 0:
+            args.epochs=args.epochs2
+
     _turn_off_adj(net,j)
     _turn_off_weights(net)        
 
