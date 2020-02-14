@@ -31,6 +31,7 @@ import argparse
 parser = argparse.ArgumentParser(description='Sequence Modeling - (Permuted) Sequential MNIST')
 parser.add_argument('--batch_size', type=int, default=64, help='batch size')
 parser.add_argument('--epochs', type=int, default=10, help='number of epochs')
+parser.add_argument('--epochs2', type=int, default=-1, help='number of epochs')
 parser.add_argument('--lr', type=float, default=1e-4, help='learning rate')
 parser.add_argument('--lr2', type=float, default=-1, help='learning rate')
 parser.add_argument('--tasks', default=10, type=int, help='no. of tasks')
