@@ -33,7 +33,7 @@ parser.add_argument('--batch_size', type=int, default=64, help='batch size')
 parser.add_argument('--epochs', type=int, default=10, help='number of epochs')
 parser.add_argument('--lr', type=float, default=1e-4, help='learning rate')
 parser.add_argument('--tasks', default=10, type=int, help='no. of tasks')
-parser.add_argument('--hidden_size', default=64, type=int, help='hidden neurons')
+parser.add_argument('--hidden_size', default=32, type=int, help='hidden neurons')
 parser.add_argument('--im_size', default=28, type=int, help='image dimensions')
 parser.add_argument('--save_path', default='./saved_models/default.pt', type=str, help='save path')
 parser.add_argument('--load_path', default='', type=str, help='load path')
@@ -73,8 +73,8 @@ torch.save(torch.stack(permutations),args.save_path[:len(args.save_path)-2]+'per
 if args.load_path != '':
     net = torch.load(args.load_path)
 else:
-    # net = ConvODENet(img_size=(1, 28, 28), num_filters=32, augment_dim=1, output_dim=10)
-    net = AConvODENet(img_size=(1, 28, 28), num_filters=32, augment_dim=1, output_dim=10)
+    # net = ConvODENet(img_size=(1, 28, 28), num_filters=args.hidden_size, augment_dim=1, output_dim=10)
+    net = AConvODENet(img_size=(1, 28, 28), num_filters=args.hidden_size, augment_dim=1, output_dim=10)
 if gpu_boole:
     net = net.cuda()
 
